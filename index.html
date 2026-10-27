@@ -1,8 +1,8 @@
 <!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#107c41"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Ø¬Ø¯ÙˆÙ„">
+<meta name="theme-color" content="#107c41"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="جدول">
 <link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="icon-192.png">
-<title>Ø¬Ø¯ÙˆÙ„</title>
+<title>جدول</title>
 <style>
 :root{color-scheme:light;--bg:#fff;--z:#eef0f3;--fg:#1f2328;--bd:#d9dde3;--hd:#f1f3f5;--ac:#107c41;--sel:#cfeadb;--tb:#f8f9fa;--mu:#6b7280;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 html{height:100%;background:#fff;scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -41,11 +41,11 @@ button:active{background:var(--sel)}button:disabled{opacity:.4}
 #ts{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#222;color:#fff;padding:9px 15px;border-radius:10px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:40;white-space:nowrap}
 </style></head><body>
 <div id="tb">
-<div class="t1"><input id="q" type="search" placeholder="ðŸ” Ø¨Ø­Ø« ÙˆØªØµÙÙŠØ©â€¦"><span id="cnt"></span><button id="bd" title="Ø­Ø°Ù Ø§Ù„ØµÙ Ø§Ù„Ù…Ø­Ø¯Ø¯">ðŸ—‘</button></div>
-<div class="t2"><button id="bu" disabled>â†¶ ØªØ±Ø§Ø¬Ø¹</button><button id="br" disabled>â†· Ø¥Ø¹Ø§Ø¯Ø©</button><button id="bi">âž• Ø¥Ø¯Ø±Ø§Ø¬ ØµÙ</button><button id="bim">ðŸ“¥ Ø§Ø³ØªÙŠØ±Ø§Ø¯</button><button id="bex">ðŸ“¤ ØªØµØ¯ÙŠØ±</button><button id="bin" hidden>ðŸ“² ØªØ«Ø¨ÙŠØª Ø§Ù„ØªØ·Ø¨ÙŠÙ‚</button><span id="st"></span></div>
+<div class="t1"><input id="q" type="search" placeholder="🔍 بحث وتصفية…"><span id="cnt"></span><button id="bd" title="حذف الصف المحدد">🗑</button></div>
+<div class="t2"><button id="bu" disabled>↶ تراجع</button><button id="br" disabled>↷ إعادة</button><button id="bi">➕ إدراج صف</button><button id="bim">📥 استيراد</button><button id="bex">📤 تصدير</button><button id="bin" hidden>📲 تثبيت التطبيق</button><span id="st"></span></div>
 <input id="imp" type="file" hidden accept=".xlsx,.csv,.txt">
 </div>
-<div id="grid" tabindex="0"><div id="sz"><div id="hd"><div class="cn"></div><div class="h">Ø§Ù„Ø§Ø³Ù…</div></div><div id="rows"></div><textarea id="ed" rows="1" dir="auto"></textarea><div id="fh"></div></div></div>
+<div id="grid" tabindex="0"><div id="sz"><div id="hd"><div class="cn"></div><div class="h">الاسم</div></div><div id="rows"></div><textarea id="ed" rows="1" dir="auto"></textarea><div id="fh"></div></div></div>
 <div id="menu"></div><div id="ts"></div>
 <script>
 const $=id=>document.getElementById(id);
@@ -65,7 +65,7 @@ sz.style.height=HH+ROWS*RH+'px';
 function upd(){$('bu').disabled=!hist.length;$('br').disabled=!redo.length}
 function render(){
  const st=g.scrollTop,vh=g.clientHeight,s=sp();
- if(!N){rw.innerHTML='<div class="empty">Ù„Ø§ ØªÙˆØ¬Ø¯ Ù†ØªØ§Ø¦Ø¬</div>';rw.style.top=HH+'px';fh.style.display='none';upd();return}
+ if(!N){rw.innerHTML='<div class="empty">لا توجد نتائج</div>';rw.style.top=HH+'px';fh.style.display='none';upd();return}
  const p0=Math.max(0,Math.floor(st/RH)-3),p1=Math.min(N-1,Math.ceil((st+vh)/RH)+3);let h='';
  for(let p=p0;p<=p1;p++){
   const r=rowAt(p),ir=p>=s.p1&&p<=s.p2;let k=p%2?' z':'';
@@ -83,10 +83,10 @@ function selP(p,ext){if(!N)return;p=cl(p,0,N-1);const r=rowAt(p);if(ext)fr=r;els
 function idb(){return new Promise((res,rej)=>{const q=indexedDB.open('xl-sheet',1);q.onupgradeneeded=()=>q.result.createObjectStore('k');q.onsuccess=()=>res(q.result);q.onerror=()=>rej()})}
 async function save(){
  pend=false;
- try{const db=await idb();await new Promise((res,rej)=>{const t=db.transaction('k','readwrite');t.objectStore('k').put({D,cols:1},'d');t.oncomplete=res;t.onerror=rej});$('st').textContent='ØªÙ… Ø§Ù„Ø­ÙØ¸ âœ“'}
- catch(e){try{localStorage.setItem('xl',JSON.stringify({D,cols:1}));$('st').textContent='ØªÙ… Ø§Ù„Ø­ÙØ¸ âœ“'}catch(e2){$('st').textContent='ØªØ¹Ø°Ù‘Ø± Ø§Ù„Ø­ÙØ¸'}}
+ try{const db=await idb();await new Promise((res,rej)=>{const t=db.transaction('k','readwrite');t.objectStore('k').put({D,cols:1},'d');t.oncomplete=res;t.onerror=rej});$('st').textContent='تم الحفظ ✓'}
+ catch(e){try{localStorage.setItem('xl',JSON.stringify({D,cols:1}));$('st').textContent='تم الحفظ ✓'}catch(e2){$('st').textContent='تعذّر الحفظ'}}
 }
-function dirty(){pend=true;$('st').textContent='Ø¬Ø§Ø±Ù Ø§Ù„Ø­ÙØ¸â€¦';clearTimeout(tm);tm=setTimeout(save,300)}
+function dirty(){pend=true;$('st').textContent='جارٍ الحفظ…';clearTimeout(tm);tm=setTimeout(save,300)}
 addEventListener('pagehide',()=>{if(pend)save()});document.addEventListener('visibilitychange',()=>{if(document.hidden&&pend)save()});
 /* history */
 function push(e){hist.push(e);if(hist.length>200)hist.shift();redo=[]}
@@ -96,8 +96,8 @@ function apply(ch){
  push({u:()=>{for(let i=old.length-1;i>=0;i--)sv(old[i][0],old[i][1])},r:()=>{for(const[r,v]of ch)sv(r,v)}});
  dirty();render();
 }
-function undo(){const e=hist[hist.length-1];if(!e)return;if(e.s&&view)return toast('Ø£Ù„ØºÙ Ø§Ù„Ø¨Ø­Ø« Ø£ÙˆÙ„Ø§Ù‹');hist.pop();e.u();redo.push(e);dirty();render()}
-function redoF(){const e=redo[redo.length-1];if(!e)return;if(e.s&&view)return toast('Ø£Ù„ØºÙ Ø§Ù„Ø¨Ø­Ø« Ø£ÙˆÙ„Ø§Ù‹');redo.pop();e.r();hist.push(e);dirty();render()}
+function undo(){const e=hist[hist.length-1];if(!e)return;if(e.s&&view)return toast('ألغِ البحث أولاً');hist.pop();e.u();redo.push(e);dirty();render()}
+function redoF(){const e=redo[redo.length-1];if(!e)return;if(e.s&&view)return toast('ألغِ البحث أولاً');redo.pop();e.r();hist.push(e);dirty();render()}
 $('bu').onclick=undo;$('br').onclick=redoF;
 /* edit */
 function grow(){ed.style.height='auto';ed.style.height=Math.max(RH,ed.scrollHeight+2)+'px'}
@@ -192,19 +192,19 @@ function placeMenu(x,y){
 }
 function showMenu(x,y,r){
  const s=sp(),p=pos(r);if(p<s.p1||p>s.p2){ar=fr=r;render()}
- menu.innerHTML='<button id="mf">â¬‡â¬† ØªØ¹Ø¨Ø¦Ø©</button><button id="mc">ðŸ§¹ Ù…Ø³Ø­ Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª</button>';
+ menu.innerHTML='<button id="mf">⬇⬆ تعبئة</button><button id="mc">🧹 مسح البيانات</button>';
  $('mf').onclick=fillUI;
- $('mc').onclick=()=>{hideMenu();const n=clearSel();toast(n?'ØªÙ… Ø§Ù„Ù…Ø³Ø­ â€” ÙŠÙ…ÙƒÙ†Ùƒ Ø§Ù„ØªØ±Ø§Ø¬Ø¹':'Ù„Ø§ ØªÙˆØ¬Ø¯ Ø¨ÙŠØ§Ù†Ø§Øª')};
+ $('mc').onclick=()=>{hideMenu();const n=clearSel();toast(n?'تم المسح — يمكنك التراجع':'لا توجد بيانات')};
  placeMenu(x,y);
 }
 function fillUI(){
- if(view){hideMenu();return toast('Ø£Ù„ØºÙ Ø§Ù„Ø¨Ø­Ø« Ø£ÙˆÙ„Ø§Ù‹ Ù„Ø§Ø³ØªØ®Ø¯Ø§Ù… Ø§Ù„ØªØ¹Ø¨Ø¦Ø©')}
- menu.innerHTML='<div class="mt">ØªØ¹Ø¨Ø¦Ø© Ø§Ù„Ø®Ù„ÙŠØ©</div><div class="mrow"><input id="fn" type="number" min="1" max="5000" value="10" inputmode="numeric"><span>ØµÙ</span></div><div class="mrow"><button id="fd">â¬‡ Ù„Ù„Ø£Ø³ÙÙ„</button><button id="fu">â¬† Ù„Ù„Ø£Ø¹Ù„Ù‰</button></div><div class="mh">Ø£Ùˆ Ø§Ø³Ø­Ø¨ Ø§Ù„Ù…Ø±Ø¨Ø¹ Ø§Ù„Ø£Ø®Ø¶Ø± Ø¨Ø§Ù„Ø¥ØµØ¨Ø¹</div>';
+ if(view){hideMenu();return toast('ألغِ البحث أولاً لاستخدام التعبئة')}
+ menu.innerHTML='<div class="mt">تعبئة الخلية</div><div class="mrow"><input id="fn" type="number" min="1" max="5000" value="10" inputmode="numeric"><span>صف</span></div><div class="mrow"><button id="fd">⬇ للأسفل</button><button id="fu">⬆ للأعلى</button></div><div class="mh">أو اسحب المربع الأخضر بالإصبع</div>';
  const go=d=>{
   const k=cl(parseInt($('fn').value)||0,1,ROWS),R=rg();
   const t=d>0?Math.min(ROWS-1,R.r2+k):Math.max(0,R.r1-k);
-  hideMenu();if(t===(d>0?R.r2:R.r1))return toast('Ù„Ø§ ØªÙˆØ¬Ø¯ Ù…Ø³Ø§Ø­Ø© Ù„Ù„ØªØ¹Ø¨Ø¦Ø©');
-  doFill(t);toast('ØªÙ…Øª Ø§Ù„ØªØ¹Ø¨Ø¦Ø©');
+  hideMenu();if(t===(d>0?R.r2:R.r1))return toast('لا توجد مساحة للتعبئة');
+  doFill(t);toast('تمت التعبئة');
  };
  $('fd').onclick=()=>go(1);$('fu').onclick=()=>go(-1);
  const t=parseFloat(menu.style.top),h=menu.offsetHeight;menu.style.top=cl(t,8,innerHeight-h-8)+'px';
@@ -238,21 +238,21 @@ document.addEventListener('paste',e=>{
 const ins=(r,n)=>{D.splice(r,0,...Array(n).fill(null));D.length=ROWS};
 const del=(r,n)=>{const s=D.splice(r,n);while(D.length<ROWS)D.push(null);return s};
 $('bi').onclick=()=>{
- if(view)return toast('Ø£Ù„ØºÙ Ø§Ù„Ø¨Ø­Ø« Ø£ÙˆÙ„Ø§Ù‹');
+ if(view)return toast('ألغِ البحث أولاً');
  const R=rg(),k=R.r2-R.r1+1;
- for(let i=1;i<=k;i++){const x=D[ROWS-i];if(x&&x.some(v=>v))return toast('Ø§Ù„ØµÙÙˆÙ Ø§Ù„Ø£Ø®ÙŠØ±Ø© Ù…Ù…ØªÙ„Ø¦Ø©ØŒ Ø§Ø­Ø°Ù ØµÙÙ‹Ø§ Ø£ÙˆÙ„Ù‹Ø§')}
- ins(R.r1,k);push({s:1,u:()=>del(R.r1,k),r:()=>ins(R.r1,k)});dirty();render();toast('ØªÙ… Ø¥Ø¯Ø±Ø§Ø¬ '+k+' ØµÙ');
+ for(let i=1;i<=k;i++){const x=D[ROWS-i];if(x&&x.some(v=>v))return toast('الصفوف الأخيرة ممتلئة، احذف صفًا أولًا')}
+ ins(R.r1,k);push({s:1,u:()=>del(R.r1,k),r:()=>ins(R.r1,k)});dirty();render();toast('تم إدراج '+k+' صف');
 };
 $('bd').onclick=()=>{
- if(view)return toast('Ø£Ù„ØºÙ Ø§Ù„Ø¨Ø­Ø« Ø£ÙˆÙ„Ø§Ù‹');
+ if(view)return toast('ألغِ البحث أولاً');
  const R=rg(),k=R.r2-R.r1+1,s=del(R.r1,k);
- push({s:1,u:()=>{D.splice(R.r1,0,...s);D.length=ROWS},r:()=>del(R.r1,k)});dirty();render();toast('ØªÙ… Ø­Ø°Ù '+k+' ØµÙ â€” ÙŠÙ…ÙƒÙ†Ùƒ Ø§Ù„ØªØ±Ø§Ø¬Ø¹');
+ push({s:1,u:()=>{D.splice(R.r1,0,...s);D.length=ROWS},r:()=>del(R.r1,k)});dirty();render();toast('تم حذف '+k+' صف — يمكنك التراجع');
 };
 /* search = filter */
 let fto=0;
 function find(){
  const qs=$('q').value.trim().toLowerCase();
- if(qs){view=[];vpos=new Map();for(let r=0;r<ROWS;r++){const v=gv(r);if(v&&v.toLowerCase().includes(qs)){vpos.set(r,view.length);view.push(r)}}N=view.length;$('cnt').textContent=N+' Ù†ØªÙŠØ¬Ø©'}
+ if(qs){view=[];vpos=new Map();for(let r=0;r<ROWS;r++){const v=gv(r);if(v&&v.toLowerCase().includes(qs)){vpos.set(r,view.length);view.push(r)}}N=view.length;$('cnt').textContent=N+' نتيجة'}
  else{view=null;vpos=null;N=ROWS;$('cnt').textContent=''}
  sz.style.height=HH+N*RH+'px';
  if(view&&N&&pos(ar)<0)ar=fr=view[0];
@@ -277,7 +277,7 @@ function zip(files){
 }
 function xlsx(a){
  const X=s=>s.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\uFFFE\uFFFF]/g,'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),H='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
- const HD='Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª',last=a.length+1;
+ const HD='البيانات',last=a.length+1;
  let rowsX='<row r="1"><c r="A1" t="inlineStr" s="1"><is><t>'+HD+'</t></is></c></row>';
  a.forEach((v,i)=>{if(v==='')return;const r=i+2,n=/^-?(0|[1-9]\d*)(\.\d+)?$/.test(v)&&v.length<16;rowsX+=`<row r="${r}"><c r="A${r}" s="2"${n?'':' t="inlineStr"'}>${n?`<v>${v}</v>`:`<is><t xml:space="preserve">${X(v)}</t></is>`}</c></row>`});
  const ns='xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"',rel='http://schemas.openxmlformats.org/officeDocument/2006/relationships',pr='http://schemas.openxmlformats.org/package/2006/relationships',ct='application/vnd.openxmlformats-officedocument.spreadsheetml.';
@@ -330,13 +330,13 @@ $('imp').onchange=async e=>{
  const f=e.target.files[0];e.target.value='';if(!f)return;
  try{
   const a=/\.xlsx$/i.test(f.name)?await readXlsx(await f.arrayBuffer()):/\.(csv|txt)$/i.test(f.name)?readCsv(await f.text()):null;
-  if(!a)return toast('Ø§Ù„ØµÙŠØºØ© ØºÙŠØ± Ù…Ø¯Ø¹ÙˆÙ…Ø©ØŒ Ø§Ø³ØªØ®Ø¯Ù… xlsx Ø£Ùˆ csv');
-  if(a[0]==='Ø§Ù„Ø¨ÙŠØ§Ù†Ø§Øª')a.shift();
+  if(!a)return toast('الصيغة غير مدعومة، استخدم xlsx أو csv');
+  if(a[0]==='البيانات')a.shift();
   D=Array(ROWS).fill(null);
   for(let r=0;r<Math.min(a.length,ROWS);r++){const v=String(a[r]==null?'':a[r]);if(v!=='')D[r]=[v]}
   hist=[];redo=[];ar=fr=0;$('q').value='';find();dirty();
-  toast('ØªÙ… Ø§Ø³ØªÙŠØ±Ø§Ø¯ '+Math.min(a.length,ROWS)+' ØµÙ'+(a.length>ROWS?' (ØªÙ… Ø§Ù‚ØªØ·Ø§Ø¹ Ø§Ù„Ø¨Ø§Ù‚ÙŠ)':''));
- }catch(x){toast('Ù…Ù„Ù ØºÙŠØ± ØµØ§Ù„Ø­')}
+  toast('تم استيراد '+Math.min(a.length,ROWS)+' صف'+(a.length>ROWS?' (تم اقتطاع الباقي)':''));
+ }catch(x){toast('ملف غير صالح')}
 };
 async function saveFile(blob,name){
  /* 1) claude.ai artifact: downloads capability */
@@ -353,12 +353,12 @@ async function saveFile(blob,name){
 }
 $('bex').onclick=async()=>{
  let lr=-1;for(let r=0;r<ROWS;r++)if(gv(r)!=='')lr=r;
- if(lr<0)return toast('Ù„Ø§ ØªÙˆØ¬Ø¯ Ø¨ÙŠØ§Ù†Ø§Øª Ù„Ù„ØªØµØ¯ÙŠØ±');
+ if(lr<0)return toast('لا توجد بيانات للتصدير');
  const a=[];for(let r=0;r<=lr;r++)a.push(gv(r));
  try{
   const res=await saveFile(xlsx(a),'sheet.xlsx');
-  if(res==='ok')toast('ØªÙ… Ø§Ù„ØªØµØ¯ÙŠØ±');
- }catch(x){toast('ØªØ¹Ø°Ù‘Ø± Ø§Ù„ØªØµØ¯ÙŠØ±: '+(x&&x.message||x))}
+  if(res==='ok')toast('تم التصدير');
+ }catch(x){toast('تعذّر التصدير: '+(x&&x.message||x))}
 };
 /* PWA + offline */
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
